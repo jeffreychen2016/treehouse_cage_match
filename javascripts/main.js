@@ -16,23 +16,23 @@ const buildDomString = (data) => {
     string += `</div>`;
     string += `<div class="row margin-top">`;
     string +=   `<p>`;
-    string +=       `<button type="button" class="btn btn-primary btn-lg">Start Cage Match</button>`;
+    string +=       `<button id='match-start' type="button" class="btn btn-primary btn-lg">Start Cage Match</button>`;
     string +=   `</p>`;
     string += `</div>`;
     string += `<div class="row margin-top">`;
     string +=   `<div class="col-md-4 col-md-offset-1">`;
     string +=   `<img id='player1-img' src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ33UnuAbwyKG4qXGagC9rXVkidvv8hvdl1ulQ7ceEOpv1CbAIx" alt="..." class="img-thumbnail">`;
-    string +=   `<div id='player1-point'>1000</div>`;      
+    string +=   `<div><h3><span id='player1-point' class="label label-default">Default</span></h3></div>`;      
     string +=   `</div>`;
     string +=   `<div class="col-md-4 col-md-offset-2">`;
     string +=   `<img id='player2-img' src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ33UnuAbwyKG4qXGagC9rXVkidvv8hvdl1ulQ7ceEOpv1CbAIx" alt="..." class="img-thumbnail">`;
-    string +=   `<div id='player2-point'>1000</div>`;      
+    string +=   `<div><h3><span id='player2-point' class="label label-default">Default</span></h3></div>`;      
     string +=   `</div>`;
     string += `</div>`;
     string += `<div class="row margin-top">`;
     string +=   `<div class="col-md-6 col-md-offset-3">`;
     string +=       `<div class="panel panel-default">`;
-    string +=           `<div class="panel-body">`;
+    string +=           `<div id='winner-board' class="panel-body">`;
     string +=               `Basic panel example`;
     string +=           `</div>`;                 
     string +=       `</div>`;          
@@ -42,13 +42,21 @@ const buildDomString = (data) => {
     printToDom(string,'body');
 }
 
-const addEventListeners = (event,callBack) => {
-    const userInputs = document.getElementsByClassName('user-input');
-    for(let i = 0; i < userInputs.length; i++){
-        userInputs[i].addEventListener(event,callBack);
+const addEventListeners = (event,callBack,attr,attrName) => {
+    if(attr === 'class'){
+        const elements = document.getElementsByClassName(attrName);
+        for(let i = 0; i < elements.length; i++){
+            elements[i].addEventListener(event,callBack);
+        }
+    }else if(attr === 'id'){
+        const element = document.getElementById(attrName);
+        element.addEventListener(event,callBack);
     }
+
 }
 
+
+//display player profile
 const getUserInput = (e) => {
     if(e.target.id === 'player1'){
         const player1 = document.getElementById(e.target.id).value;
@@ -92,13 +100,30 @@ const displayPlayerProfile = (e) => {
     };
     xhttp_player_2.open("GET","https://teamtreehouse.com/jeffrey.json", true);
     xhttp_player_2.send();
+} //End of display player profile
+
+const findWinner = () => {
+    const player_1_point = document.getElementById('player1-point').innerHTML;
+    const player_2_point = document.getElementById('player2-point').innerHTML;
+    console.log(player_1_point,player_2_point);
+    if(player_1_point > player_2_point){
+        let winner = document.getElementById('player1').value;
+        document.getElementById('winner-board').innerHTML = winner;
+    }else if(player_1_point < player_2_point){
+        let winner = document.getElementById('player2').value;
+        document.getElementById('winner-board').innerHTML = winner;
+    }else{
+        document.getElementById('winner-board').innerHTML = 'Tie!!!';
+    }
 }
+
 
 // XHR
 function runOnSuccess(){
     const data = JSON.parse(this.responseText);
     buildDomString(data);
-    addEventListeners('keyup',getUserInput);
+    addEventListeners('keyup',getUserInput,'class','user-input');
+    addEventListeners('click',findWinner,'id','match-start');
     console.log(data);
 }
 
@@ -112,8 +137,7 @@ const XHRRequest = (runOnSuccess) => {
     xhrRequest.addEventListener('error',runOnFail);
     xhrRequest.open('GET','https://teamtreehouse.com/krissycaron.json');
     xhrRequest.send();
-}
-// End of XHR
+} // End of XHR
 
 
 
