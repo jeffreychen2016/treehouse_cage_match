@@ -33,7 +33,7 @@ const buildDomString = (data) => {
     string +=   `<div class="col-md-6 col-md-offset-3">`;
     string +=       `<div class="panel panel-default">`;
     string +=           `<div id='winner-board' class="panel-body">`;
-    string +=               `Basic panel example`;
+    string +=               `Match Result`;
     string +=           `</div>`;                 
     string +=       `</div>`;          
     string +=   `</div>`;
@@ -52,97 +52,79 @@ const addEventListeners = (event,callBack,attr,attrName) => {
         const element = document.getElementById(attrName);
         element.addEventListener(event,callBack);
     }
-
 }
-
 
 //display player profile
 const getUserInput = (e) => {
+    let player1 = '';
+    let player2 = '';
     if(e.target.id === 'player1'){
-        const player1 = document.getElementById(e.target.id).value;
-        console.log('player1:',player1);
+        player1 = document.getElementById(e.target.id).value;
     }else{
-        const player2 = document.getElementById(e.target.id).value;
-        console.log('player2:',player2);
+        player2 = document.getElementById(e.target.id).value;
     }   
-    // console.log('player1:',player1);
-    // console.log('player2:',player2);
-    displayPlayerProfile(e);
+    displayPlayerProfile(e,player1,player2);
 }
 
-const displayPlayerProfile = (e) => {
-    const xhttp_player_1 = new XMLHttpRequest();
-    xhttp_player_1.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-            const returnedData_player_1 = JSON.parse(this.responseText);
-            if(e.target.id === 'player1'){
+const displayPlayerProfile = (e,player1,player2) => {
+    if(e.target.id === 'player1'){
+        const xhttp_player_1 = new XMLHttpRequest();
+        xhttp_player_1.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                const returnedData_player_1 = JSON.parse(this.responseText);
                 let player1_img = document.getElementById('player1-img');
                 player1_img.setAttribute('src',returnedData_player_1.gravatar_url);
                 let player1_point = document.getElementById('player1-point');
                 player1_point.innerHTML = `${returnedData_player_1.points.total}`;
+            }else{
+                let player1_img = document.getElementById('player1-img');
+                player1_img.setAttribute('src','https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ33UnuAbwyKG4qXGagC9rXVkidvv8hvdl1ulQ7ceEOpv1CbAIx');
             }
         }
-    };
-    xhttp_player_1.open("GET","https://teamtreehouse.com/krissycaron.json", true);
-    xhttp_player_1.send();
-
-    const xhttp_player_2 = new XMLHttpRequest();
-    xhttp_player_2.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-            const returnedData_player_2 = JSON.parse(this.responseText);
-            if(e.target.id === 'player2'){
+        xhttp_player_1.open("GET","https://teamtreehouse.com/" + player1 + ".json", true);
+        xhttp_player_1.send();
+    }else{
+        const xhttp_player_2 = new XMLHttpRequest();
+        xhttp_player_2.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                const returnedData_player_2 = JSON.parse(this.responseText);
                 let player2_img = document.getElementById('player2-img');
                 player2_img.setAttribute('src',returnedData_player_2.gravatar_url);
                 let player2_point = document.getElementById('player2-point');
                 player2_point.innerHTML = `${returnedData_player_2.points.total}`;
+            }else{
+                let player2_img = document.getElementById('player2-img');
+                player2_img.setAttribute('src','https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ33UnuAbwyKG4qXGagC9rXVkidvv8hvdl1ulQ7ceEOpv1CbAIx');
             }
-        }
-    };
-    xhttp_player_2.open("GET","https://teamtreehouse.com/jeffrey.json", true);
-    xhttp_player_2.send();
+        };
+        xhttp_player_2.open("GET","https://teamtreehouse.com/" + player2 + ".json", true);
+        xhttp_player_2.send();
+    }
 } //End of display player profile
 
 const findWinner = () => {
-    const player_1_point = document.getElementById('player1-point').innerHTML;
-    const player_2_point = document.getElementById('player2-point').innerHTML;
-    console.log(player_1_point,player_2_point);
-    if(player_1_point > player_2_point){
-        let winner = document.getElementById('player1').value;
-        document.getElementById('winner-board').innerHTML = winner;
-    }else if(player_1_point < player_2_point){
-        let winner = document.getElementById('player2').value;
-        document.getElementById('winner-board').innerHTML = winner;
+    const player_1_point = parseInt(document.getElementById('player1-point').innerHTML);
+    const player_2_point = parseInt(document.getElementById('player2-point').innerHTML);
+
+    if(!isNaN(player_1_point) && !isNaN(player_2_point)){
+        if(player_1_point > player_2_point){
+            let winner = document.getElementById('player1').value;
+            document.getElementById('winner-board').innerHTML = winner;
+        }else if(player_1_point < player_2_point){
+            let winner = document.getElementById('player2').value;
+            document.getElementById('winner-board').innerHTML = winner;
+        }else{
+            document.getElementById('winner-board').innerHTML = 'Tie!!!';
+        }
     }else{
-        document.getElementById('winner-board').innerHTML = 'Tie!!!';
+        alert('Please select both players!!!');
     }
 }
 
-
-// XHR
-function runOnSuccess(){
-    const data = JSON.parse(this.responseText);
-    buildDomString(data);
+const applicationStarts = () => {
+    buildDomString();
     addEventListeners('keyup',getUserInput,'class','user-input');
     addEventListeners('click',findWinner,'id','match-start');
-    console.log(data);
-}
-
-function runOnFail(){
-    console.log('XHR fails~~~~');
-}
-
-const XHRRequest = (runOnSuccess) => {
-    const xhrRequest = new XMLHttpRequest();
-    xhrRequest.addEventListener('load',runOnSuccess);
-    xhrRequest.addEventListener('error',runOnFail);
-    xhrRequest.open('GET','https://teamtreehouse.com/krissycaron.json');
-    xhrRequest.send();
-} // End of XHR
-
-
-
-const applicationStarts = () => {
-    XHRRequest(runOnSuccess);
 }
 
 
