@@ -1,3 +1,12 @@
 .margin-top{
     margin-top: 30px;
 }
+
+.players-default-img{
+    width: 320px;
+    height: 320px;
+}
+
+.center-btn{
+    text-align: center;
+}
