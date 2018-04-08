@@ -1,3 +1,8 @@
+body{
+    background-image: url('https://cdn-images-1.medium.com/max/1200/1*e5p9O0AuJNv7ONSclz7-Ng.jpeg');
+    background-size: cover;
+}
+
 .margin-top{
     margin-top: 30px;
 }
@@ -10,3 +15,29 @@
 .center-btn{
     text-align: center;
 }
+
+.border-red{
+    border: 8px solid red;
+}
+
+.border-red-thin{
+    border: 3px solid red;
+}
+
+.border-blue{
+    border: 8px solid blue;
+}
+
+.border-blue-thin{
+    border: 3px solid blue;
+}
+
+
+.text-red{
+    color: red;
+}
+
+.text-blue{
+    color: blue;
+}
+
