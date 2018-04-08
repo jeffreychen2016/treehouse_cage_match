@@ -6,12 +6,12 @@ const buildDomString = (data) => {
     string = '';
     string += `<div class="row margin-top">`;
     string +=   `<div class="col-md-4 col-md-offset-1">`;
-    string +=   `<label for="exampleInputName2">Player 1:</label>`;
-    string +=   `<input type="text" class="form-control user-input" id="player1" placeholder="Text input">`;    
+    string +=   `<label class='text-red' for="exampleInputName2">Player 1:</label>`;
+    string +=   `<input type="text" class="form-control user-input player-label" id="player1" placeholder="Player 1 Name">`;    
     string +=   `</div>`;
     string +=   `<div class="col-md-4 col-md-offset-2">`;
-    string +=   `<label for="exampleInputName2">Player 2:</label>`;
-    string +=   `<input type="text" class="form-control user-input" id="player2" placeholder="Text input">`;    
+    string +=   `<label class='text-blue' for="exampleInputName2">Player 2:</label>`;
+    string +=   `<input type="text" class="form-control user-input" id="player2" placeholder="Player 2 Name">`;    
     string +=   `</div>`;
     string += `</div>`;
     string += `<div class="row margin-top">`;
@@ -21,12 +21,12 @@ const buildDomString = (data) => {
     string += `</div>`;
     string += `<div class="row margin-top">`;
     string +=   `<div class="col-md-4 col-md-offset-1">`;
-    string +=   `<img id='player1-img' src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ33UnuAbwyKG4qXGagC9rXVkidvv8hvdl1ulQ7ceEOpv1CbAIx" alt="..." class="img-thumbnail players-default-img">`;
-    string +=   `<div><h3><span id='player1-point' class="label label-default">Points</span></h3></div>`;      
+    string +=   `<img id='player1-img' src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ33UnuAbwyKG4qXGagC9rXVkidvv8hvdl1ulQ7ceEOpv1CbAIx" alt="..." class="img-thumbnail players-default-img border-red">`;
+    string +=   `<div><h3><span id='player1-point' class="label label-default border-red-thin text-red">Points</span></h3></div>`;      
     string +=   `</div>`;
     string +=   `<div class="col-md-4 col-md-offset-2">`;
-    string +=   `<img id='player2-img' src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ33UnuAbwyKG4qXGagC9rXVkidvv8hvdl1ulQ7ceEOpv1CbAIx" alt="..." class="img-thumbnail players-default-img">`;
-    string +=   `<div><h3><span id='player2-point' class="label label-default">Points</span></h3></div>`;      
+    string +=   `<img id='player2-img' src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ33UnuAbwyKG4qXGagC9rXVkidvv8hvdl1ulQ7ceEOpv1CbAIx" alt="..." class="img-thumbnail players-default-img border-blue">`;
+    string +=   `<div><h3><span id='player2-point' class="label label-default border-blue-thin text-blue">Points</span></h3></div>`;      
     string +=   `</div>`;
     string += `</div>`;
     string += `<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">`;
@@ -77,40 +77,41 @@ const displayPlayerProfile = (e,player1,player2) => {
         const xhttp_player_1 = new XMLHttpRequest();
         xhttp_player_1.onreadystatechange = function() {
             if (this.readyState == 4 && this.status == 200) {
-                const returnedData_player_1 = JSON.parse(this.responseText);
-                let player1_img = document.getElementById('player1-img');
-                player1_img.setAttribute('src',returnedData_player_1.gravatar_url);
-                let player1_point = document.getElementById('player1-point');
-                player1_point.innerHTML = `${returnedData_player_1.points.total}`;
+                runOnSuccess(this,'player1');
             }else{
-                let player1_img = document.getElementById('player1-img');
-                player1_img.setAttribute('src','https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ33UnuAbwyKG4qXGagC9rXVkidvv8hvdl1ulQ7ceEOpv1CbAIx');
-                let player1_point = document.getElementById('player1-point');
-                player1_point.innerHTML = `Points`;
+                runOnFailure('player1');
             }
         }
         xhttp_player_1.open("GET","https://teamtreehouse.com/" + player1 + ".json", true);
         xhttp_player_1.send();
-    }else{
+    }else if(e.target.id === 'player2'){
         const xhttp_player_2 = new XMLHttpRequest();
         xhttp_player_2.onreadystatechange = function() {
-            if (this.readyState == 4 && this.status == 200) {
-                const returnedData_player_2 = JSON.parse(this.responseText);
-                let player2_img = document.getElementById('player2-img');
-                player2_img.setAttribute('src',returnedData_player_2.gravatar_url);
-                let player2_point = document.getElementById('player2-point');
-                player2_point.innerHTML = `${returnedData_player_2.points.total}`;
+            if (this.readyState == 4 && this.status == 200){
+                runOnSuccess(this,'player2');
             }else{
-                let player2_img = document.getElementById('player2-img');
-                player2_img.setAttribute('src','https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ33UnuAbwyKG4qXGagC9rXVkidvv8hvdl1ulQ7ceEOpv1CbAIx');
-                let player2_point = document.getElementById('player2-point');
-                player2_point.innerHTML = `Points`;
+                runOnFailure('player2');
             }
         };
         xhttp_player_2.open("GET","https://teamtreehouse.com/" + player2 + ".json", true);
         xhttp_player_2.send();
     }
 } //End of display player profile
+
+function runOnSuccess(xhrCall,playerID){
+    const returnedData = JSON.parse(xhrCall.responseText);
+    let player_img = document.getElementById(`${playerID}-img`);
+    player_img.setAttribute('src',returnedData.gravatar_url);
+    let player_point = document.getElementById(`${playerID}-point`);
+    player_point.innerHTML = `${returnedData.points.total}`;
+}
+
+function runOnFailure(playerID){
+    let player_img = document.getElementById(`${playerID}-img`);
+    player_img.setAttribute('src','https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ33UnuAbwyKG4qXGagC9rXVkidvv8hvdl1ulQ7ceEOpv1CbAIx');
+    let player_point = document.getElementById(`${playerID}-point`);
+    player_point.innerHTML = `Points`;
+}
 
 const inputValidation = () => {
     const player1_fight = document.getElementById('player1').value;
@@ -129,7 +130,7 @@ const inputValidation = () => {
 const startFight = (player1,player2) => {
     const fight_title = document.getElementById('winner-name').innerHTML;
     const fight_img = `<img src="https://adriaticmedianethr.files.wordpress.com/2017/08/fora-dana29.gif?w=399" alt="..." class="img-thumbnail players-default-img">`;
-    document.getElementById('winner-name').innerHTML = `${player1} vs ${player2}`;
+    document.getElementById('winner-name').innerHTML = `<h4><span class="label label-default text-red border-red-thin">${player1}</span> VS <span class="label label-default text-blue border-blue-thin">${player2}</span></h4> `;
     document.getElementById('winner-board').innerHTML = fight_img;
     document.getElementById('find-winner-btn').style.display = 'unset';  
     document.getElementById('modal-close-btn').style.display = 'none';  
@@ -141,15 +142,15 @@ const findWinner = () => {
     const player_2_point = parseInt(document.getElementById('player2-point').innerHTML);
 
     if(player_1_point > player_2_point){
-        let winner = `The Winner Is:${document.getElementById('player1').value}`;
+        let winner = `The Winner Is:<br><span class="label label-default text-red border-red-thin">${document.getElementById('player1').value}</span>`;
         let winner_img_source = document.getElementById('player1-img').getAttribute('src');
-        let winner_img = `<img src="${winner_img_source}" alt="..." class="img-thumbnail players-default-img">`;
+        let winner_img = `<img src="${winner_img_source}" alt="..." class="img-thumbnail players-default-img border-red">`;
         document.getElementById('winner-name').innerHTML = winner;
         document.getElementById('winner-board').innerHTML = winner_img;
     }else if(player_1_point < player_2_point){
-        let winner = `The Winner Is:${document.getElementById('player2').value}`;
+        let winner = `The Winner Is:<br><span class="label label-default text-blue border-blue-thin">${document.getElementById('player2').value}</span>`;
         let winner_img_source = document.getElementById('player2-img').getAttribute('src');
-        let winner_img = `<img src="${winner_img_source}" alt="..." class="img-thumbnail players-default-img">`;
+        let winner_img = `<img src="${winner_img_source}" alt="..." class="img-thumbnail players-default-img border-blue">`;
         document.getElementById('winner-name').innerHTML = winner;
         document.getElementById('winner-board').innerHTML = winner_img;
     }else{
