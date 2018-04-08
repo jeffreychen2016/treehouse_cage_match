@@ -37,8 +37,9 @@ const buildDomString = (data) => {
     string +=           `</div>`;
     string +=           `<div class="modal-body" id='winner-board'>`;
     string +=           `</div>`;
-    string +=           `<div class="modal-footer">`;
-    string +=               `<button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>`;
+    string +=           `<div class="modal-footer center-btn">`;
+    string +=               `<button id="find-winner-btn" type="button" class="btn btn-primary">Who Will Be The Winner!?</button>`;
+    string +=               `<button id="modal-close-btn" type="button" class="btn btn-primary" data-dismiss="modal">Close</button>`;
     string +=           `</div>`;
     string +=       `</div>`;
     string +=    `</div>`;
@@ -111,35 +112,57 @@ const displayPlayerProfile = (e,player1,player2) => {
     }
 } //End of display player profile
 
+const inputValidation = () => {
+    const player1_fight = document.getElementById('player1').value;
+    const player2_fight = document.getElementById('player2').value;
+    const player_1_point = parseInt(document.getElementById('player1-point').innerHTML);
+    const player_2_point = parseInt(document.getElementById('player2-point').innerHTML);
+    if(isNaN(player_1_point) || isNaN(player_2_point)){
+        document.getElementById('winner-name').innerHTML = 'Invalid Player Names';
+        document.getElementById('winner-board').innerHTML = 'Please select both players!!!';  
+        document.getElementById('find-winner-btn').style.display = 'none';
+    }else{
+        startFight(player1_fight,player2_fight);
+    }
+}
+
+const startFight = (player1,player2) => {
+    const fight_title = document.getElementById('winner-name').innerHTML;
+    const fight_img = `<img src="https://adriaticmedianethr.files.wordpress.com/2017/08/fora-dana29.gif?w=399" alt="..." class="img-thumbnail players-default-img">`;
+    document.getElementById('winner-name').innerHTML = `${player1} vs ${player2}`;
+    document.getElementById('winner-board').innerHTML = fight_img;
+    document.getElementById('find-winner-btn').style.display = 'unset';  
+    document.getElementById('modal-close-btn').style.display = 'none';  
+    addEventListeners('click',findWinner,'id','find-winner-btn');
+}
+
 const findWinner = () => {
     const player_1_point = parseInt(document.getElementById('player1-point').innerHTML);
     const player_2_point = parseInt(document.getElementById('player2-point').innerHTML);
 
-    if(!isNaN(player_1_point) && !isNaN(player_2_point)){
-        if(player_1_point > player_2_point){
-            let winner = `The Winner Is:${document.getElementById('player1').value}`;
-            let winner_img_source = document.getElementById('player1-img').getAttribute('src');
-            let winner_img = `<img src="${winner_img_source}" alt="..." class="img-thumbnail players-default-img">`;
-            document.getElementById('winner-name').innerHTML = winner;
-            document.getElementById('winner-board').innerHTML = winner_img;
-        }else if(player_1_point < player_2_point){
-            let winner = `The Winner Is:${document.getElementById('player2').value}`;
-            let winner_img_source = document.getElementById('player2-img').getAttribute('src');
-            let winner_img = `<img src="${winner_img_source}" alt="..." class="img-thumbnail players-default-img">`;
-            document.getElementById('winner-name').innerHTML = winner;
-            document.getElementById('winner-board').innerHTML = winner_img;
-        }else{
-            document.getElementById('winner-board').innerHTML = 'Tie!!!';
-        }
+    if(player_1_point > player_2_point){
+        let winner = `The Winner Is:${document.getElementById('player1').value}`;
+        let winner_img_source = document.getElementById('player1-img').getAttribute('src');
+        let winner_img = `<img src="${winner_img_source}" alt="..." class="img-thumbnail players-default-img">`;
+        document.getElementById('winner-name').innerHTML = winner;
+        document.getElementById('winner-board').innerHTML = winner_img;
+    }else if(player_1_point < player_2_point){
+        let winner = `The Winner Is:${document.getElementById('player2').value}`;
+        let winner_img_source = document.getElementById('player2-img').getAttribute('src');
+        let winner_img = `<img src="${winner_img_source}" alt="..." class="img-thumbnail players-default-img">`;
+        document.getElementById('winner-name').innerHTML = winner;
+        document.getElementById('winner-board').innerHTML = winner_img;
     }else{
-        document.getElementById('winner-board').innerHTML = 'Please select both players!!!';
+        document.getElementById('winner-board').innerHTML = 'Tie!!!';
     }
+    document.getElementById('find-winner-btn').style.display = 'none';  
+    document.getElementById('modal-close-btn').style.display = 'unset'; 
 }
 
 const applicationStarts = () => {
     buildDomString();
     addEventListeners('keyup',getUserInput,'class','user-input');
-    addEventListeners('click',findWinner,'id','match-start');
+    addEventListeners('click',inputValidation,'id','match-start');
 }
 
 
