@@ -16,29 +16,34 @@ const buildDomString = (data) => {
     string += `</div>`;
     string += `<div class="row margin-top">`;
     string +=   `<p>`;
-    string +=       `<button id='match-start' type="button" class="btn btn-primary btn-lg">Start Cage Match</button>`;
+    string +=       `<button id='match-start' type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#exampleModalCenter">Start Cage Match</button>`;
     string +=   `</p>`;
     string += `</div>`;
     string += `<div class="row margin-top">`;
     string +=   `<div class="col-md-4 col-md-offset-1">`;
-    string +=   `<img id='player1-img' src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ33UnuAbwyKG4qXGagC9rXVkidvv8hvdl1ulQ7ceEOpv1CbAIx" alt="..." class="img-thumbnail">`;
-    string +=   `<div><h3><span id='player1-point' class="label label-default">Default</span></h3></div>`;      
+    string +=   `<img id='player1-img' src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ33UnuAbwyKG4qXGagC9rXVkidvv8hvdl1ulQ7ceEOpv1CbAIx" alt="..." class="img-thumbnail players-default-img">`;
+    string +=   `<div><h3><span id='player1-point' class="label label-default">Points</span></h3></div>`;      
     string +=   `</div>`;
     string +=   `<div class="col-md-4 col-md-offset-2">`;
-    string +=   `<img id='player2-img' src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ33UnuAbwyKG4qXGagC9rXVkidvv8hvdl1ulQ7ceEOpv1CbAIx" alt="..." class="img-thumbnail">`;
-    string +=   `<div><h3><span id='player2-point' class="label label-default">Default</span></h3></div>`;      
+    string +=   `<img id='player2-img' src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ33UnuAbwyKG4qXGagC9rXVkidvv8hvdl1ulQ7ceEOpv1CbAIx" alt="..." class="img-thumbnail players-default-img">`;
+    string +=   `<div><h3><span id='player2-point' class="label label-default">Points</span></h3></div>`;      
     string +=   `</div>`;
     string += `</div>`;
-    string += `<div class="row margin-top">`;
-    string +=   `<div class="col-md-6 col-md-offset-3">`;
-    string +=       `<div class="panel panel-default">`;
-    string +=           `<div id='winner-board' class="panel-body">`;
-    string +=               `Match Result`;
-    string +=           `</div>`;                 
-    string +=       `</div>`;          
-    string +=   `</div>`;
+    string += `<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">`;
+    string +=   `<div class="modal-dialog modal-dialog-centered" role="document">`;
+    string +=       `<div class="modal-content">`;
+    string +=           `<div class="modal-header">`;
+    string +=               `<h5 id='winner-name' class="modal-title" id="exampleModalLongTitle">The Winner is:</h5>`;
+    string +=           `</div>`;
+    string +=           `<div class="modal-body" id='winner-board'>`;
+    string +=           `</div>`;
+    string +=           `<div class="modal-footer">`;
+    string +=               `<button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>`;
+    string +=           `</div>`;
+    string +=       `</div>`;
+    string +=    `</div>`;
     string += `</div>`;
-    
+
     printToDom(string,'body');
 }
 
@@ -79,6 +84,8 @@ const displayPlayerProfile = (e,player1,player2) => {
             }else{
                 let player1_img = document.getElementById('player1-img');
                 player1_img.setAttribute('src','https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ33UnuAbwyKG4qXGagC9rXVkidvv8hvdl1ulQ7ceEOpv1CbAIx');
+                let player1_point = document.getElementById('player1-point');
+                player1_point.innerHTML = `Points`;
             }
         }
         xhttp_player_1.open("GET","https://teamtreehouse.com/" + player1 + ".json", true);
@@ -95,6 +102,8 @@ const displayPlayerProfile = (e,player1,player2) => {
             }else{
                 let player2_img = document.getElementById('player2-img');
                 player2_img.setAttribute('src','https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ33UnuAbwyKG4qXGagC9rXVkidvv8hvdl1ulQ7ceEOpv1CbAIx');
+                let player2_point = document.getElementById('player2-point');
+                player2_point.innerHTML = `Points`;
             }
         };
         xhttp_player_2.open("GET","https://teamtreehouse.com/" + player2 + ".json", true);
@@ -108,16 +117,22 @@ const findWinner = () => {
 
     if(!isNaN(player_1_point) && !isNaN(player_2_point)){
         if(player_1_point > player_2_point){
-            let winner = document.getElementById('player1').value;
-            document.getElementById('winner-board').innerHTML = winner;
+            let winner = `The Winner Is:${document.getElementById('player1').value}`;
+            let winner_img_source = document.getElementById('player1-img').getAttribute('src');
+            let winner_img = `<img src="${winner_img_source}" alt="..." class="img-thumbnail players-default-img">`;
+            document.getElementById('winner-name').innerHTML = winner;
+            document.getElementById('winner-board').innerHTML = winner_img;
         }else if(player_1_point < player_2_point){
-            let winner = document.getElementById('player2').value;
-            document.getElementById('winner-board').innerHTML = winner;
+            let winner = `The Winner Is:${document.getElementById('player2').value}`;
+            let winner_img_source = document.getElementById('player2-img').getAttribute('src');
+            let winner_img = `<img src="${winner_img_source}" alt="..." class="img-thumbnail players-default-img">`;
+            document.getElementById('winner-name').innerHTML = winner;
+            document.getElementById('winner-board').innerHTML = winner_img;
         }else{
             document.getElementById('winner-board').innerHTML = 'Tie!!!';
         }
     }else{
-        alert('Please select both players!!!');
+        document.getElementById('winner-board').innerHTML = 'Please select both players!!!';
     }
 }
 
