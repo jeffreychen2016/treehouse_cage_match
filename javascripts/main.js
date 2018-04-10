@@ -137,59 +137,55 @@ const startFight = (player1,player2) => {
     addEventListeners('click',findWinner,'id','find-winner-btn');
 }
 
+function runOnSuccessFindWinner(xhrCall,playerID){
+    let modalString = '';
+    let winner = `The Winner Is:<br><span class="label label-default text-red border-red-thin">${document.getElementById(playerID).value}</span>`;
+    let winner_img_source = document.getElementById(`${playerID}-img`).getAttribute('src');
+    let winner_img = `<img src="${winner_img_source}" alt="..." class="img-thumbnail players-default-img border-red">`;
+    document.getElementById('winner-name').innerHTML = winner;
+    document.getElementById('winner-board').innerHTML = winner_img;
+
+    const returnedData = JSON.parse(xhrCall.responseText);
+    modalString += `${winner_img}<br>`;
+    for(let i = 0; i < returnedData.badges.length; i++){
+        modalString += `<span class='badge background-none'><img class='badge-icon' src='${returnedData.badges[i].icon_url}'</img></span>`;
+    }
+    document.getElementById('winner-board').innerHTML = modalString;
+}
+
+function runOnFailureFindWinner(){
+    console.log('XHR Call Fails~~~~~');
+}
+
 const findWinner = () => {
     const player_1_point = parseInt(document.getElementById('player1-point').innerHTML);
     const player_2_point = parseInt(document.getElementById('player2-point').innerHTML);
 
     if(player_1_point > player_2_point){
-        const player1 = document.getElementById('player1').value;
-        let winner = `The Winner Is:<br><span class="label label-default text-red border-red-thin">${document.getElementById('player1').value}</span>`;
-        let winner_img_source = document.getElementById('player1-img').getAttribute('src');
-        let winner_img = `<img src="${winner_img_source}" alt="..." class="img-thumbnail players-default-img border-red">`;
-        document.getElementById('winner-name').innerHTML = winner;
-        document.getElementById('winner-board').innerHTML = winner_img;
-
-        let string = '';
-        const xhttp_player_1 = new XMLHttpRequest();
-        xhttp_player_1.onreadystatechange = function() {
-            if (xhttp_player_1.readyState == 4 && xhttp_player_1.status == 200) {
-                const returnedData = JSON.parse(xhttp_player_1.responseText);
-                string += `${winner_img}<br>`;
-                for(let i = 0; i < returnedData.badges.length; i++){
-                    string += `<span class='badge background-none'><img class='badge-icon' src='${returnedData.badges[i].icon_url}'</img></span>`;
-                }
-                document.getElementById('winner-board').innerHTML = string;
+        let player1 = document.getElementById('player1').value;
+        const xhrCall = new XMLHttpRequest();
+        xhrCall.onreadystatechange = function() {
+            if (xhrCall.readyState == 4 && xhrCall.status == 200) {
+                runOnSuccessFindWinner(xhrCall,'player1');
             }else{
-                console.log('fails');
+                runOnFailureFindWinner;
             }
         }
-        xhttp_player_1.open("GET","https://teamtreehouse.com/" + player1 + ".json", true);
-        xhttp_player_1.send();
+        xhrCall.open("GET","https://teamtreehouse.com/" + player1 + ".json", true);
+        xhrCall.send();
     }else if(player_1_point < player_2_point){
         const player2 = document.getElementById('player2').value;
-        let winner = `The Winner Is:<br><span class="label label-default text-blue border-blue-thin">${document.getElementById('player2').value}</span>`;
-        let winner_img_source = document.getElementById('player2-img').getAttribute('src');
-        let winner_img = `<img src="${winner_img_source}" alt="..." class="img-thumbnail players-default-img border-blue">`;
-        document.getElementById('winner-name').innerHTML = winner;
-        document.getElementById('winner-board').innerHTML = winner_img;
-
-        let string = '';
-        const xhttp_player_2 = new XMLHttpRequest();
-        xhttp_player_2.onreadystatechange = function() {
-            if (xhttp_player_2.readyState == 4 && xhttp_player_2.status == 200) {
-                const returnedData = JSON.parse(xhttp_player_2.responseText);
-                string += `${winner_img}<br>`;
-                for(let i = 0; i < returnedData.badges.length; i++){
-                    string += `<span class='badge background-none'><img class='badge-icon' src='${returnedData.badges[i].icon_url}'</img></span>`;
-                }
-                document.getElementById('winner-board').innerHTML = string;
+        const xhrCall= new XMLHttpRequest();
+        xhrCall.onreadystatechange = function() {
+            if (xhrCall.readyState == 4 && xhrCall.status == 200) {
+                runOnSuccessFindWinner(xhrCall,'player2');
             }else{
-                console.log('fails');
+                runOnFailureFindWinner;
             }
         }
-        xhttp_player_2.open("GET","https://teamtreehouse.com/" + player2 + ".json", true);
-        xhttp_player_2.send();
-    }else{
+        xhrCall.open("GET","https://teamtreehouse.com/" + player2 + ".json", true);
+        xhrCall.send();
+    }else{  
         document.getElementById('winner-board').innerHTML = 'Tie!!!';
     }
     document.getElementById('find-winner-btn').style.display = 'none';  
