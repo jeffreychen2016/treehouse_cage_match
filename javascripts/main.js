@@ -142,17 +142,53 @@ const findWinner = () => {
     const player_2_point = parseInt(document.getElementById('player2-point').innerHTML);
 
     if(player_1_point > player_2_point){
+        const player1 = document.getElementById('player1').value;
         let winner = `The Winner Is:<br><span class="label label-default text-red border-red-thin">${document.getElementById('player1').value}</span>`;
         let winner_img_source = document.getElementById('player1-img').getAttribute('src');
         let winner_img = `<img src="${winner_img_source}" alt="..." class="img-thumbnail players-default-img border-red">`;
         document.getElementById('winner-name').innerHTML = winner;
         document.getElementById('winner-board').innerHTML = winner_img;
+
+        let string = '';
+        const xhttp_player_1 = new XMLHttpRequest();
+        xhttp_player_1.onreadystatechange = function() {
+            if (xhttp_player_1.readyState == 4 && xhttp_player_1.status == 200) {
+                const returnedData = JSON.parse(xhttp_player_1.responseText);
+                string += `${winner_img}<br>`;
+                for(let i = 0; i < returnedData.badges.length; i++){
+                    string += `<span class='badge background-none'><img class='badge-icon' src='${returnedData.badges[i].icon_url}'</img></span>`;
+                }
+                document.getElementById('winner-board').innerHTML = string;
+            }else{
+                console.log('fails');
+            }
+        }
+        xhttp_player_1.open("GET","https://teamtreehouse.com/" + player1 + ".json", true);
+        xhttp_player_1.send();
     }else if(player_1_point < player_2_point){
+        const player2 = document.getElementById('player2').value;
         let winner = `The Winner Is:<br><span class="label label-default text-blue border-blue-thin">${document.getElementById('player2').value}</span>`;
         let winner_img_source = document.getElementById('player2-img').getAttribute('src');
         let winner_img = `<img src="${winner_img_source}" alt="..." class="img-thumbnail players-default-img border-blue">`;
         document.getElementById('winner-name').innerHTML = winner;
         document.getElementById('winner-board').innerHTML = winner_img;
+
+        let string = '';
+        const xhttp_player_2 = new XMLHttpRequest();
+        xhttp_player_2.onreadystatechange = function() {
+            if (xhttp_player_2.readyState == 4 && xhttp_player_2.status == 200) {
+                const returnedData = JSON.parse(xhttp_player_2.responseText);
+                string += `${winner_img}<br>`;
+                for(let i = 0; i < returnedData.badges.length; i++){
+                    string += `<span class='badge background-none'><img class='badge-icon' src='${returnedData.badges[i].icon_url}'</img></span>`;
+                }
+                document.getElementById('winner-board').innerHTML = string;
+            }else{
+                console.log('fails');
+            }
+        }
+        xhttp_player_2.open("GET","https://teamtreehouse.com/" + player2 + ".json", true);
+        xhttp_player_2.send();
     }else{
         document.getElementById('winner-board').innerHTML = 'Tie!!!';
     }
